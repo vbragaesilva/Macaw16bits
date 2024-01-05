@@ -1,0 +1,7 @@
+ldi ro 34
+prnt
+ldi ro 34
+prnt
+ldi ro 10
+prnt
+hlt

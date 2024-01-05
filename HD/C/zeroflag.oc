@@ -1,0 +1,9 @@
+ldi ra 0
+subi 1 rb
+jz 7
+ldi ro 1
+out
+hlt
+ldi ro 0
+out
+hlt

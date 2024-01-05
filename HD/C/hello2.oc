@@ -1,0 +1,9 @@
+#pushfirstbyteto string length ("Hello, World!" -> 13)
+#pushdatastring with the string
+lab ra 0
+lab ro 1
+prnt
+subi 1 ra
+jnz 2
+hlt
+#if we implement LoadRegisterAdressByte command it can work (lab ro rb)(addi

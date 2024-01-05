@@ -1,0 +1,7 @@
+ldi ra  1234
+ out         
+ # ignore this  line   
+out     #wtf is
+
+ 
+hlt

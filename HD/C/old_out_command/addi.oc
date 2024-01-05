@@ -1,0 +1,7 @@
+ldi ra 1
+out
+addi 3 ra
+out
+jnc 3
+out
+hlt

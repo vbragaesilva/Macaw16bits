@@ -1,0 +1,5 @@
+ldi ra 456
+out
+nop
+out
+hlt

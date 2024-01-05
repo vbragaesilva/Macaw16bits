@@ -1,0 +1,8 @@
+ldi rc 0
+larb ro rc
+prnt
+inc rc
+ldr ra ro
+subi 0 ra
+jnz 2
+hlt

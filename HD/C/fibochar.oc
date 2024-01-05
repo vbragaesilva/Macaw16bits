@@ -1,0 +1,11 @@
+ldi ra 0x1
+ldi rb 0x1
+add rc
+ldr ro ra
+prnt
+ldr ra rb
+ldr rb rc
+jnc 0b11
+ldr ro ra
+prnt
+hlt

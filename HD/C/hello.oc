@@ -1,0 +1,30 @@
+#pushString "Hello, World!"
+lab ro 0 #H
+prnt
+lab ro 1 #e
+prnt
+lab ro 2 #l
+prnt
+lab ro 3 #l
+prnt
+lab ro 4 #o
+prnt
+lab ro 5 #,
+prnt
+lab ro 6 #
+prnt
+lab ro 7 #W
+prnt
+lab ro 8 #o
+prnt
+lab ro 9 #r
+prnt
+lab ro 10 #l
+prnt
+lab ro 11 #d
+prnt
+lab ro 12 #!
+prnt
+ldi ro 10 #\n
+prnt
+hlt

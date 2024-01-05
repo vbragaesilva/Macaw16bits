@@ -1,0 +1,4 @@
+ldi re 1234
+ldr ra re
+out
+hlt

@@ -1,0 +1,9 @@
+ldi ra 1
+ldi rb 2
+mult rc
+out
+ldr ra rb
+ldr rb rc
+jnc 3
+out 
+hlt
