@@ -3,6 +3,15 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
+struct TokenizedOCVectors
+{
+	std::vector<std::vector<String>> data, code;
+};
+struct OCVectors
+{
+	std::vector<String> data, code;
+};
+
 struct Writer
 {
 private:
@@ -47,7 +56,7 @@ public:
 		if (fs.fail())
 		{
 			fail = true;
-			std::cout << "Fail to load File: \"" << path << "\"" << std::endl;
+			std::cout << "Fail to load File: \"" << path << "\"" << '\n';
 			//abort();
 			exit(1);
 		}
@@ -64,7 +73,7 @@ public:
 			delete[] raw_buffer;
 			return bytes;
 		}
-		std::cout << "erro no vetor b(1)" << std::endl;
+		std::cout << "erro no vetor b(1)" << '\n';
 		abort();
 	}
 };
@@ -93,7 +102,7 @@ struct BinFile
 	}
 };
 */
-struct LineReader
+struct AssemblerLineReader
 {
 	std::vector<String> getLines(const char* path)
 	{
@@ -107,76 +116,36 @@ struct LineReader
 		stream.close();
 		return linesArray;
 	}
-	std::vector<std::vector<String>> tokenizeOLD(std::vector<String> vec, const char& sep)
-	{
-		std::vector<std::vector<String>> tokenized;
-		for (int j = 0; j < vec.size(); j++)
-		{
-			String lineString = vec[j];
-			while (lineString[0] == ' ' || lineString[0] == '	')
-			{
-				lineString = lineString.substr(1);
-			}
-			if (lineString[0] == '#' || lineString[0] == 0) continue;
-			int hashPosition = indexFirstString(lineString, '#');
-			if (hashPosition >= 0)
-			{
-				lineString = lineString.substr(0, hashPosition);
-			}
-			std::vector<String> tokens;
-			String s;
-			for ( short i = 0; i <= lineString.length(); i++)
-			{
-				if (i == lineString.length())
-				{
-					if (s != "")
-					{
-						tokens.push_back(s);
-					}
-					break;
-				}
-				if ((char)lineString[i] != sep)
-				{
-					s += toupper(lineString[i]);
-				}
-				else 
-				{
-					if(s != "")
-					{
-						tokens.push_back(s);
-					}
-					s.clear();
-				}
-			}
-			tokenized.push_back(tokens);
-		}
-		return tokenized;
+	TokenizedOCVectors tokenize(std::vector<String> vec)
+	{		
+		constexpr char COMMENT_SYMBOL = '#';
+		std::vector<String> cleanedLines = cleanString(vec, COMMENT_SYMBOL);
+		OCVectors tempOCVectors = getSubVectors(cleanedLines);
+		std::vector<std::vector<String>> data_tokens = tokenizeData(tempOCVectors.data);
+		std::vector<std::vector<String>> code_tokens = tokenizeCode(tempOCVectors.code);
+		
+		return {data_tokens, code_tokens};
 	}
 
-	void tokenize(std::vector<String> vec, std::vector<std::vector<String>>& dataTokens, std::vector<std::vector<String>>& codeTokens)
+	std::vector<String> cleanString(std::vector<String> linesVector, const char& commentMark)
 	{
-		std::vector<String> tmpLine;
+		std::vector<String> cleanedLines;
+		for (int lineIndex = 0; lineIndex < linesVector.size(); lineIndex++)
+		{
+			String currentLine = removeWhiteSpacesFromStringStart(linesVector[lineIndex]);
+			if (currentLine[0] == commentMark || currentLine[0] == 0) continue;
+			int hashPosition = indexFirstString(currentLine, commentMark);
+			if (hashPosition >= 0) currentLine = currentLine.substr(0, hashPosition);
+			cleanedLines.push_back(currentLine);
+		}
+		return cleanedLines;
+	}
+	OCVectors getSubVectors(std::vector<String>& tmpLine)
+	{
 		std::vector<String> tmpData;
 		std::vector<String> tmpCode;
-		//clean strings
-		for (int lineIndex = 0; lineIndex < vec.size(); lineIndex++)
-		{
-			String currentLine = vec[lineIndex];
-			while (currentLine[0] == ' ' || currentLine[0] == '	')
-			{
-				currentLine = currentLine.substr(1);
-			}
-			if (currentLine[0] == '#' || currentLine[0] == 0) continue;
-			int hashPosition = indexFirstString(currentLine, '#');
-			if (hashPosition >= 0)
-			{
-				currentLine = currentLine.substr(0, hashPosition);
-			}
-			tmpLine.push_back(currentLine);
-		}
 		int _dataIndex = indexOfVector(tmpLine, (String)".data");
 		int _codeIndex = indexOfVector(tmpLine, (String)".code");
-		//get sub vectors
 		for (int lineIndex = 0; lineIndex < tmpLine.size(); lineIndex++)
 		{
 			String currentLine = tmpLine[lineIndex];
@@ -189,29 +158,22 @@ struct LineReader
 				tmpCode.push_back(currentLine);
 			}
 		}
-		
-		/*for (String el : tmpData)
+		return { tmpData, tmpCode };
+	}
+	std::vector<std::vector<String>> tokenizeData(std::vector<String> dataVector)
+	{
+		std::vector<std::vector<String>> dataTokens;
+		for (int lineIndex = 0; lineIndex < dataVector.size(); lineIndex++)
 		{
-			std::cout << "D: " << el << std::endl;
-		}
-		std::cout << std::endl;
-		for (String el : tmpCode)
-		{
-			std::cout << "C: " << el << std::endl;
-		}*/
-		//TOKENIZE
-		//data
-		for (int lineIndex = 0; lineIndex < tmpData.size(); lineIndex++)
-		{
-			String dataLine = tmpData[lineIndex];
+			String dataLine = dataVector[lineIndex];
 			std::vector<String> tokens;
 			String s;
 			bool insideQuotes = false;
-			
+
 			for (int column = 0; column <= dataLine.length(); column++)
 			{
 				char character = dataLine[column];
-				char previousChar = column == 0 ? 0: dataLine[column - 1];
+				char previousChar = column == 0 ? 0 : dataLine[column - 1];
 				if (character == '"' && previousChar != '\\')
 				{
 					insideQuotes = insideQuotes ? 0 : 1;
@@ -243,10 +205,14 @@ struct LineReader
 			}
 			dataTokens.push_back(tokens);
 		}
-		//commands
-		for (int lineIndex = 0; lineIndex < tmpCode.size(); lineIndex++)
+		return dataTokens;
+	}
+	std::vector<std::vector<String>> tokenizeCode(std::vector<String> codeVector)
+	{
+		std::vector<std::vector<String>> codeTokens;
+		for (int lineIndex = 0; lineIndex < codeVector.size(); lineIndex++)
 		{
-			String commandLine = tmpCode[lineIndex];
+			String commandLine = codeVector[lineIndex];
 			std::vector<String> tokens;
 			String s;
 			for (int column = 0; column <= commandLine.length(); column++)
@@ -274,6 +240,7 @@ struct LineReader
 			}
 			codeTokens.push_back(tokens);
 		}
+		return codeTokens;
 	}
 
 	void copyVector(const std::vector<std::vector<String>>& original, std::vector<std::vector<String>>& copy)

@@ -5,14 +5,14 @@
 int main()
 {
 	//std::cout << typeid(a).name() << '\n';
-	CPU cpu(50, CPU::NoLog);
 	
-
 	/*
+	CPU cpu(0, CPU::NoLog);
 
 	cpu.PushDataString("Hello, World!\n\0");
-	cpu.Assemble("C/allchars.oc", CPU::LOAD_BYTES);
+	cpu.Assemble("C/fibo.oc", CPU::LOAD);
 	cpu.Run();
-	return 0;
 	*/
+	
+	return 0;
 }

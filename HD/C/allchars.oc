@@ -11,6 +11,7 @@
   prnt #kkkkkk
   ldr ra rc
   inc rc
-  subi 255 ra
+  inc rc
+  subi 254 ra
   jnz 2
   hlt

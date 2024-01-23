@@ -155,7 +155,7 @@ public:
 		if (index == ZERO) return flags.zero;
 		if (index == NEGATIVE) return flags.negative;
 		if (index == INTERRUPT) return flags.interrupt;
-		std::cout << "Wrong flag" << std::endl;
+		std::cout << "Wrong flag" << '\n';
 		return 0;
 	}
 	void setFlag(Byte index, bool value)
@@ -210,7 +210,7 @@ struct OutputRegister : public Register
 		bus = nullptr;
 	}
 	void Output() {
-		std::cout << "-> " << Value << std::endl;
+		std::cout << "-> " << Value << '\n';
 	}
 };
 

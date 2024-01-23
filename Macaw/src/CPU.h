@@ -11,10 +11,10 @@ struct CPU
 {
 public://ENUMS
   enum AssemblerFlags {
-        PRINT_LINES = 1,
-        PRINT_BYTES = 2,
-        SAVE_BYTES = 4,
-        LOAD_BYTES = 8
+        LINES = 1,
+        BINARY = 2,
+        SAVE = 4,
+        LOAD = 8
     };
   enum LogLevel
     {
@@ -63,7 +63,7 @@ private:
   int64_t m_delayUSeconds;
   bool halt;
   Reader reader;
-  LineReader lineReader;
+  AssemblerLineReader lineReader;
   Writer writer;
   Byte InstructionBytes[256];
   instructionType InsTypes[256];
@@ -317,7 +317,7 @@ public:
     if (Ins == NOP)
     {
       SC.EndOperation();
-      if (printNOP) std::cout << "NOP" << std::endl;
+      if (printNOP) std::cout << "NOP" << '\n';
       return;
     }
 
@@ -1050,7 +1050,7 @@ public:
     {
       if (SP.Value == 0)
       {
-        std::cout << "Stack has no data pushed!" << std::endl;
+        std::cout << "Stack has no data pushed!" << '\n';
         return;
       }
       if (Step == 3)
@@ -1117,7 +1117,7 @@ public:
     else if (Ins == HLT)
     {
       halt = true;
-      std::cout << std::endl << loadedProgram << " exited with code " << exitCode[0] << std::endl;
+      std::cout << '\n' << loadedProgram << " exited with code " << exitCode[0] << '\n';
       return;
     }
 
@@ -1134,7 +1134,6 @@ public:
             SC++;
             if (m_delayUSeconds != 0) usleep(m_delayUSeconds);
         }
-        exit(B.Value);
     }
 
   //Standard Push
@@ -1355,41 +1354,41 @@ public:
     std::vector<String> lines = lineReader.getLines(filepath.c_str());
 
     //std::vector<std::vector<String>> tokenLines = lineReader.tokenize(lines, ' ');
-    std::vector<std::vector<String>> dataTokens;
-    std::vector<std::vector<String>> codeTokens;
-    lineReader.tokenize(lines, dataTokens, codeTokens);
+    //std::vector<std::vector<String>> dataTokens;
+    //std::vector<std::vector<String>> codeTokens;
+    TokenizedOCVectors tokens = lineReader.tokenize(lines);
     //print tokenized lines
     if (printTokenizedLines) // (print array) USE THIS TO VISUALIZE AND CREATE THE DATA SECTION
     {
-      std::cout << "DATA:[" << std::endl;
-      for (std::vector<String> arr : dataTokens)
+      std::cout << "DATA:[" << '\n';
+      for (std::vector<String> arr : tokens.data)
       {
         std::cout << "  [";
         for (String token : arr)
         {
           std::cout << ' ' << '\'' << token << '\'';
         }
-        std::cout << "]" << std::endl;
+        std::cout << "]" << '\n';
       }
-      std::cout << "]" << std::endl;
-      std::cout << "CODE:[" << std::endl;
-      for (std::vector<String> arr : codeTokens)
+      std::cout << "]" << '\n';
+      std::cout << "CODE:[" << '\n';
+      for (std::vector<String> arr : tokens.code)
       {
         std::cout << "  [";
         for (String token : arr)
         {
           std::cout << ' ' << '\'' << token << '\'';
         }
-        std::cout << "]" << std::endl;
+        std::cout << "]" << '\n';
       }
-      std::cout << "]" << std::endl;
+      std::cout << "]" << '\n';
     }
 
     //COMPILE DATA
-    for (int index = 0; index < dataTokens.size(); index++)//Need to write PS PB and PW commands!!!
+    for (int index = 0; index < tokens.data.size(); index++)//Need to write PS PB and PW commands!!!
     {
       int lineNumber = index + 1;
-      std::vector<String> tokenizedDataLine = dataTokens[index];
+      std::vector<String> tokenizedDataLine = tokens.data[index];
       String command = toUpper(tokenizedDataLine[0]);
       if (command == "PS")
       {
@@ -1450,19 +1449,25 @@ public:
     buffer.push_back(3);
     buffer.push_back(0);
     //push instructions to the buffer
-    for (int i = 0; i < codeTokens.size(); i++)
+    for (int i = 0; i < tokens.code.size(); i++)
     {
-      std::vector<String> line = codeTokens[i];
-      int lineNumber = i + 1;
-      Byte Ins = Opcode[line[0]];
-      buffer.push_back(Ins);
-      //Operands 
-      if (Opcode[line[0]] == Opcode["NAOEXISTECARAMBA"] && line[0] != "NOP")
+      std::vector<String> line = tokens.code[i];
+      const int lineNumber = i + 1;
+      const bool instructionExists = Opcode.count(line[0]) > 0 ? true : false;
+      Byte Ins;
+      if (instructionExists)
       {
+        Ins = Opcode.at(line[0]);
+      }
+      else
+      {
+        Ins = 0;
         String msg = "Unknown command \"" + line[0] + "\"";
         LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         continue;
       }
+      buffer.push_back(Ins);
+      //Operands 
       if (InsTypes[Ins] == P)
       {
         if (line.size() > 1)
@@ -1535,7 +1540,7 @@ public:
       else if (InsTypes[Ins] == IR)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
           buffer.push_back(RegMap[regString]);
         }
@@ -1556,7 +1561,7 @@ public:
       else if (InsTypes[Ins] == IL)
       {
         if (!checkWord(line[1], lineNumber, "Code")) compilationSucceeded = false;
-        if (toNumber(line[1]) < 1 || toNumber(line[1]) > codeTokens.size())
+        if (toNumber(line[1]) < 1 || toNumber(line[1]) > tokens.code.size())
         {
           LogCompilationError("Code", lineNumber, "Invalid line Number", compilationSucceeded);
           return;
@@ -1566,7 +1571,7 @@ public:
         Word address = 0;
         for (Byte index = 0; index < lineAddress - 1; index++)
         {
-          Instruction lineIns = Opcode[codeTokens[index][0]];
+          Instruction lineIns = Opcode.at(tokens.code[index][0]);
           address += (InstructionBytes[lineIns] + 1);
         }
         Byte upper = address >> 8;
@@ -1583,9 +1588,9 @@ public:
       else if (InsTypes[Ins] == IRR)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1593,9 +1598,9 @@ public:
           LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         }
         regString = line[2];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1616,9 +1621,9 @@ public:
       else if (InsTypes[Ins] == IRW)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1650,9 +1655,9 @@ public:
         buffer.push_back(upper);
         //check register
         String regString = line[2];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1673,9 +1678,9 @@ public:
       else if (InsTypes[Ins] == IRRR)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1683,9 +1688,9 @@ public:
           LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         }
         regString = line[2];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1693,9 +1698,9 @@ public:
           LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         }
         regString = line[3];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1728,14 +1733,14 @@ public:
     }
     if (!compilationSucceeded)
     {
-      std::cout << "Compilation Failed!" << std::endl;
+      std::cout << "Compilation Failed!" << '\n';
       halt = true;
     }
   }
 private:
   void LogCompilationError(const String& section, const int& lineNumber, const String& message, bool& success)
   {
-    std::cout << "[" << section << ":Line " << lineNumber << "] " << message << std::endl;
+    std::cout << "[" << section << ":Line " << lineNumber << "] " << message << '\n';
     success = false;
   }
   void Log(const String& message, const LogLevel& level)
