@@ -319,301 +319,294 @@ public:
       if (printNOP) std::cout << "NOP" << '\n';
       return;
     case LARB:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         ram.OutByte();
         std_registerIn(I[1]);
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case LARW:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         ram.OutWordLittle();
         std_registerIn(I[1]);
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case LDI:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(2);
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case LAB:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutByte();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case LAW:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutWordLittle();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case LDR:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         std_registerOut(I[2]);
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case SARL:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         std_registerOut(I[1]);
         ram.InLower();
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case SARU:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         std_registerOut(I[1]);
         ram.InUpper();
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case SARW:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         std_registerOut(I[1]);
         ram.InWord();
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case STL:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[1]);
         ram.InLower();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case STU:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[1]);
         ram.InUpper();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case STW:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[1]);
         ram.InWord();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case STI:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         I.OutByte(1);
         ram.InLower();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case JMP:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         I.OutWordLittle(1);
         PC.In();
         bus.Reset();
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case JC:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         if (FR.getFlag(FlagRegister::CARRY))
         {
           I.OutWordLittle(1);
@@ -621,16 +614,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case JNC:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         if (!FR.getFlag(FlagRegister::CARRY))
         {
           I.OutWordLittle(1);
@@ -638,16 +632,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case JZ:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         if (FR.getFlag(FlagRegister::ZERO))
         {
           I.OutWordLittle(1);
@@ -656,16 +651,17 @@ public:
 
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case JNZ:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         if (!FR.getFlag(FlagRegister::ZERO))
         {
           I.OutWordLittle(1);
@@ -673,16 +669,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case JN:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         if (FR.getFlag(FlagRegister::NEGATIVE))
         {
           I.OutWordLittle(1);
@@ -690,16 +687,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case JNN:
-      if (Step == 4)
+      switch (Step)
       {
+      case 4:
         if (!FR.getFlag(FlagRegister::NEGATIVE))
         {
           I.OutWordLittle(1);
@@ -707,231 +705,234 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case ADD:
-      if (Step == 3)
+      switch (Step)
       {
+      case 3:
         alu.OutSum();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case ADDA:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutWordLittle();
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSum();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case ADDI:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         alu.OutSum();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case ADDR:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         std_registerOut(I[1]);
         A.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[2]);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSum();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case SUB:
-      if (Step == 3)
+      switch (Step)
       {
+      case 3:
         alu.OutSub();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case SUBA:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutWordLittle();
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSub();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case SUBI:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         alu.OutSub();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case SUBR:
-      if (Step == 5)
+      switch (Step)
       {
+      case 5:
         std_registerOut(I[1]);
         A.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[2]);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSub();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case MULT:
-      if (Step == 3)
+      switch (Step)
       {
+      case 3:
         alu.OutMult();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case DIV:
-      //LOL
-      return;
-    case INC:
-      if (Step == 3)
+      switch (Step)
       {
+      case 3:
+        bus.Value = 0xFF;
+        std_registerIn(I[1]);
+        bus.Reset();
+        return;
+      case 4:
+        SC.EndOperation();
+        return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
+      }
+    case INC:
+      switch (Step)
+      {
+      case 3:
         if (std_registerGetValue(I[1]) == 0xFFFF)
         {
           FR.setFlag(FlagRegister::CARRY, 1);
         }
         std_registerINC(I[1]);
         return;
-      }
-      else if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case DEC:
-      if (Step == 3)
+      switch (Step)
       {
+      case 3:
         if (std_registerGetValue(I[1]) == 1)
         {
           FR.setFlag(FlagRegister::ZERO, 1);
@@ -940,27 +941,25 @@ public:
         {
           FR.setFlag(FlagRegister::NEGATIVE, 1);
         }
-
         std_registerDEC(I[1]);
         return;
-      }
-      else if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case PUSH:
-      if (Step == 3)
+      switch (Step)
       {
+      case 3:
         ram.SetBank(2);
         SP.Out();
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         std_registerOut(I[1]);
         ram.InWord();
         bus.Reset();
@@ -968,21 +967,22 @@ public:
         SP.Value++;
         SP.Value++;//Two increments because we push a word
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case POP:
       if (SP.Value == 0)
       {
         std::cout << "Stack has no data pushed!" << '\n';
         return;
       }
-      if (Step == 3)
+      switch (Step)
       {
+      case 3:
         SP.Value--;
         SP.Value--;//Two decrements because we pop a word
         ram.SetBank(2);
@@ -990,52 +990,45 @@ public:
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         ram.OutWordLittle();
         std_registerIn(I[1]);
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case PRNT:
-      if (Step == 2)
+      switch (Step)
       {
+      case 2:
         std::cout << (char)(O.Value & 0b0000000011111111);
         return;
-      }
-      else if (Step == 3)
-      {
+      case 3:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case OUT:
-      /*if (Step == 2)
- {
-     A.Out();
-     O.In();
-     bus.Reset();
-     return;
- }*/
-      if (Step == 2)
+      switch (Step)
       {
+      case 2:
         O.Output();
         return;
-      }
-      if (Step == 3)
-      {
+      case 3:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
     case HLT:
       halt = true;
       std::cout << '\n' << loadedProgram << " exited with code " << exitCode[0] << '\n';
