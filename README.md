@@ -16,6 +16,8 @@
 * bth to last byte: program instructions
 
 ### 1.3) Programming and running the computer
+
+#### 1.3.1) Programming
 * To program Macaw16 with a executable .x file, use the following function:
 ~~~javascript
   cpu.LoadXFile("path/inside/HD/folder/to/the/file.x");
@@ -43,6 +45,8 @@
 ~~~
   * Registers are treated as Bytes
   * Lines are treated as Words
+#### 1.3.2) Running
+  * The computer will look for the second last word in ram. The corresponding value will be set to the program counter and the program will begin from there.
 
 ## 2) Instructions
 

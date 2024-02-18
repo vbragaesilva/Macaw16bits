@@ -1039,16 +1039,17 @@ public:
     }    
   }
   void Run()
-    {
-        bus.Value = (ram[0xfffd] << 8) + ram[0xfffc];
-        PC.In();
-        bus.Reset();
-        while (!halt) {
-            Exec();
-            SC++;
-            if (m_delayUSeconds != 0) usleep(m_delayUSeconds);
-        }
+  {
+    ram.SetBank(0);
+    bus.Value = (ram[0xfffd] << 8) + ram[0xfffc];
+    PC.In();
+    bus.Reset();
+    while (!halt) {
+      Exec();
+      SC++;
+      if (m_delayUSeconds != 0) usleep(m_delayUSeconds);
     }
+  }
 
   //Standard Push
   void PushByteRAM(const Byte& b, const Byte& bank_number)
