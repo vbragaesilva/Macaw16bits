@@ -11,10 +11,10 @@ struct CPU
 {
 public://ENUMS
   enum AssemblerFlags {
-        PRINT_LINES = 1,
-        PRINT_BYTES = 2,
-        SAVE_BYTES = 4,
-        LOAD_BYTES = 8
+        LINES = 1,
+        BINARY = 2,
+        SAVE = 4,
+        LOAD = 8
     };
   enum LogLevel
     {
@@ -63,7 +63,7 @@ private:
   int64_t m_delayUSeconds;
   bool halt;
   Reader reader;
-  LineReader lineReader;
+  AssemblerLineReader lineReader;
   Writer writer;
   Byte InstructionBytes[256];
   instructionType InsTypes[256];
@@ -313,340 +313,300 @@ public:
 
     }
     //next Step is nBytes + 2
-
-    if (Ins == NOP)
-    {
+    switch (Ins) {
+    case NOP:
       SC.EndOperation();
-      if (printNOP) std::cout << "NOP" << std::endl;
+      if (printNOP) std::cout << "NOP" << '\n';
       return;
-    }
-
-    else if (Ins == LARB)
-    {
-      if (Step == 4)
+    case LARB:
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         ram.OutByte();
         std_registerIn(I[1]);
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == LARW)
-    {
-      if (Step == 4)
+    case LARW:
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         ram.OutWordLittle();
         std_registerIn(I[1]);
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == LDI)
-    {
-      if (Step == 5)
+    case LDI:
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(2);
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == LAB)
-    {
-      if (Step == 5)
+    case LAB:
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutByte();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == LAW)
-    {
-      if (Step == 5)
+    case LAW:
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutWordLittle();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == LDR)
-    {
-      if (Step == 4)
+    case LDR:
+      switch (Step)
       {
+      case 4:
         std_registerOut(I[2]);
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == SARL)
-    {
-      if (Step == 4)
+    case SARL:
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         std_registerOut(I[1]);
         ram.InLower();
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == SARU)
-    {
-      if (Step == 4)
+    case SARU:
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         std_registerOut(I[1]);
         ram.InUpper();
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == SARW)
-    {
-      if (Step == 4)
+    case SARW:
+      switch (Step)
       {
+      case 4:
         ram.SetBank(1);
         std_registerOut(I[2]);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      else if (Step == 5)
-      {
+      case 5:
         std_registerOut(I[1]);
         ram.InWord();
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      else if (Step == 6)
-      {
+      case 6:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == STL)
-    {
-      if (Step == 5)
+    case STL:
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[1]);
         ram.InLower();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == STU)
-    {
-      if (Step == 5)
+    case STU:
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[1]);
         ram.InUpper();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == STW)
-    {
-      if (Step == 5)
+    case STW:
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[1]);
         ram.InWord();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == STI)
-    {
-      if (Step == 5)
+    case STI:
+      switch (Step)
       {
+      case 5:
         ram.SetBank(1);
         I.OutWordLittle(2);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         I.OutByte(1);
         ram.InLower();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         ram.SetBank(0);
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-
-    else if (Ins == JMP)
-    {
-      if (Step == 4)
+    case JMP:
+      switch (Step)
       {
+      case 4:
         I.OutWordLittle(1);
         PC.In();
         bus.Reset();
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == JC)
-    {
-      if (Step == 4)
+    case JC:
+      switch (Step)
       {
+      case 4:
         if (FR.getFlag(FlagRegister::CARRY))
         {
           I.OutWordLittle(1);
@@ -654,18 +614,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == JNC)
-    {
-      if (Step == 4)
+    case JNC:
+      switch (Step)
       {
+      case 4:
         if (!FR.getFlag(FlagRegister::CARRY))
         {
           I.OutWordLittle(1);
@@ -673,18 +632,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == JZ)
-    {
-      if (Step == 4)
+    case JZ:
+      switch (Step)
       {
+      case 4:
         if (FR.getFlag(FlagRegister::ZERO))
         {
           I.OutWordLittle(1);
@@ -693,18 +651,17 @@ public:
 
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == JNZ)
-    {
-      if (Step == 4)
+    case JNZ:
+      switch (Step)
       {
+      case 4:
         if (!FR.getFlag(FlagRegister::ZERO))
         {
           I.OutWordLittle(1);
@@ -712,18 +669,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == JN)
-    {
-      if (Step == 4)
+    case JN:
+      switch (Step)
       {
+      case 4:
         if (FR.getFlag(FlagRegister::NEGATIVE))
         {
           I.OutWordLittle(1);
@@ -731,18 +687,17 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == JNN)
-    {
-      if (Step == 4)
+    case JNN:
+      switch (Step)
       {
+      case 4:
         if (!FR.getFlag(FlagRegister::NEGATIVE))
         {
           I.OutWordLittle(1);
@@ -750,255 +705,234 @@ public:
           bus.Reset();
         }
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-
-    else if (Ins == ADD)
-    {
-      if (Step == 3)
+    case ADD:
+      switch (Step)
       {
+      case 3:
         alu.OutSum();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == ADDA)
-    {
-      if (Step == 5)
+    case ADDA:
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutWordLittle();
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSum();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == ADDI)
-    {
-      if (Step == 5)
+    case ADDI:
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         alu.OutSum();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == ADDR)
-    {
-      if (Step == 5)
+    case ADDR:
+      switch (Step)
       {
+      case 5:
         std_registerOut(I[1]);
         A.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[2]);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSum();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == SUB)
-    {
-      if (Step == 3)
+    case SUB:
+      switch (Step)
       {
+      case 3:
         alu.OutSub();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == SUBA)
-    {
-      if (Step == 5)
+    case SUBA:
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         ram.OutWordLittle();
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSub();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == SUBI)
-    {
-      if (Step == 5)
+    case SUBI:
+      switch (Step)
       {
+      case 5:
         I.OutWordLittle(1);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         alu.OutSub();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == SUBR)
-    {
-      if (Step == 5)
+    case SUBR:
+      switch (Step)
       {
+      case 5:
         std_registerOut(I[1]);
         A.In();
         bus.Reset();
         return;
-      }
-      if (Step == 6)
-      {
+      case 6:
         std_registerOut(I[2]);
         B.In();
         bus.Reset();
         return;
-      }
-      if (Step == 7)
-      {
+      case 7:
         alu.OutSub();
         std_registerIn(I[3]);
         bus.Reset();
         return;
-      }
-      if (Step == 8)
-      {
+      case 8:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == MULT)
-    {
-      if (Step == 3)
+    case MULT:
+      switch (Step)
       {
+      case 3:
         alu.OutMult();
         std_registerIn(I[1]);
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == DIV)
-    {
-      //LOL
-    }
-    else if (Ins == INC)
-    {
-      if (Step == 3)
+    case DIV:
+      switch (Step)
       {
+      case 3:
+        bus.Value = 0xFF;
+        std_registerIn(I[1]);
+        bus.Reset();
+        return;
+      case 4:
+        SC.EndOperation();
+        return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
+      }
+    case INC:
+      switch (Step)
+      {
+      case 3:
         if (std_registerGetValue(I[1]) == 0xFFFF)
         {
           FR.setFlag(FlagRegister::CARRY, 1);
         }
         std_registerINC(I[1]);
         return;
-      }
-      else if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == DEC)
-    {
-      if (Step == 3)
+    case DEC:
+      switch (Step)
       {
+      case 3:
         if (std_registerGetValue(I[1]) == 1)
         {
           FR.setFlag(FlagRegister::ZERO, 1);
@@ -1007,30 +941,25 @@ public:
         {
           FR.setFlag(FlagRegister::NEGATIVE, 1);
         }
-
         std_registerDEC(I[1]);
         return;
-      }
-      else if (Step == 4)
-      {
+      case 4:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-
-    else if (Ins == PUSH)
-    {
-      if (Step == 3)
+    case PUSH:
+      switch (Step)
       {
+      case 3:
         ram.SetBank(2);
         SP.Out();
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         std_registerOut(I[1]);
         ram.InWord();
         bus.Reset();
@@ -1038,23 +967,22 @@ public:
         SP.Value++;
         SP.Value++;//Two increments because we push a word
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
-      }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == POP)
-    {
-      if (SP.Value == 0)
-      {
-        std::cout << "Stack has no data pushed!" << std::endl;
+      default:
+        std_NoMicroLog(Step, Ins);
         return;
       }
-      if (Step == 3)
+    case POP:
+      if (SP.Value == 0)
       {
+        std::cout << "Stack has no data pushed!" << '\n';
+        return;
+      }
+      switch (Step)
+      {
+      case 3:
         SP.Value--;
         SP.Value--;//Two decrements because we pop a word
         ram.SetBank(2);
@@ -1062,80 +990,66 @@ public:
         ram.MIn();
         bus.Reset();
         return;
-      }
-      if (Step == 4)
-      {
+      case 4:
         ram.OutWordLittle();
         std_registerIn(I[1]);
         bus.Reset();
         ram.SetBank(0);
         return;
-      }
-      if (Step == 5)
-      {
+      case 5:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-
-    else if (Ins == PRNT)
-    {
-      if (Step == 2)
+    case PRNT:
+      switch (Step)
       {
+      case 2:
         std::cout << (char)(O.Value & 0b0000000011111111);
         return;
-      }
-      else if (Step == 3)
-      {
+      case 3:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == OUT)
-    {
-      /*if (Step == 2)
+    case OUT:
+      switch (Step)
       {
-          A.Out();
-          O.In();
-          bus.Reset();
-          return;
-      }*/
-      if (Step == 2)
-      {
+      case 2:
         O.Output();
         return;
-      }
-      if (Step == 3)
-      {
+      case 3:
         SC.EndOperation();
         return;
+      default:
+        std_NoMicroLog(Step, Ins);
+        return;
       }
-      std_NoMicroLog(Step, Ins);
-    }
-    else if (Ins == HLT)
-    {
+    case HLT:
       halt = true;
-      std::cout << std::endl << loadedProgram << " exited with code " << exitCode[0] << std::endl;
+      std::cout << '\n' << loadedProgram << " exited with code " << exitCode[0] << '\n';
       return;
-    }
-
-    std::cout << "No instruction " << (int)Ins << " with step " << (int)Step << '\n';
-    std::cout << "I: " << (int)I[0] << " " << (int)I[1] << " " << (int)I[2] << " " << (int)I[3] << '\n';
+    default:
+      std::cout << "No instruction " << (int)Ins << " with step " << (int)Step << '\n';
+      std::cout << "I: " << (int)I[0] << " " << (int)I[1] << " " << (int)I[2] << " " << (int)I[3] << '\n';
+    }    
   }
   void Run()
-    {
-        bus.Value = (ram[0xfffd] << 8) + ram[0xfffc];
-        PC.In();
-        bus.Reset();
-        while (!halt) {
-            Exec();
-            SC++;
-            if (m_delayUSeconds != 0) usleep(m_delayUSeconds);
-        }
-        exit(B.Value);
+  {
+    ram.SetBank(0);
+    bus.Value = (ram[0xfffd] << 8) + ram[0xfffc];
+    PC.In();
+    bus.Reset();
+    while (!halt) {
+      Exec();
+      SC++;
+      if (m_delayUSeconds != 0) usleep(m_delayUSeconds);
     }
+  }
 
   //Standard Push
   void PushByteRAM(const Byte& b, const Byte& bank_number)
@@ -1355,41 +1269,41 @@ public:
     std::vector<String> lines = lineReader.getLines(filepath.c_str());
 
     //std::vector<std::vector<String>> tokenLines = lineReader.tokenize(lines, ' ');
-    std::vector<std::vector<String>> dataTokens;
-    std::vector<std::vector<String>> codeTokens;
-    lineReader.tokenize(lines, dataTokens, codeTokens);
+    //std::vector<std::vector<String>> dataTokens;
+    //std::vector<std::vector<String>> codeTokens;
+    TokenizedOCVectors tokens = lineReader.tokenize(lines);
     //print tokenized lines
     if (printTokenizedLines) // (print array) USE THIS TO VISUALIZE AND CREATE THE DATA SECTION
     {
-      std::cout << "DATA:[" << std::endl;
-      for (std::vector<String> arr : dataTokens)
+      std::cout << "DATA:[" << '\n';
+      for (std::vector<String> arr : tokens.data)
       {
         std::cout << "  [";
         for (String token : arr)
         {
           std::cout << ' ' << '\'' << token << '\'';
         }
-        std::cout << "]" << std::endl;
+        std::cout << "]" << '\n';
       }
-      std::cout << "]" << std::endl;
-      std::cout << "CODE:[" << std::endl;
-      for (std::vector<String> arr : codeTokens)
+      std::cout << "]" << '\n';
+      std::cout << "CODE:[" << '\n';
+      for (std::vector<String> arr : tokens.code)
       {
         std::cout << "  [";
         for (String token : arr)
         {
           std::cout << ' ' << '\'' << token << '\'';
         }
-        std::cout << "]" << std::endl;
+        std::cout << "]" << '\n';
       }
-      std::cout << "]" << std::endl;
+      std::cout << "]" << '\n';
     }
 
     //COMPILE DATA
-    for (int index = 0; index < dataTokens.size(); index++)//Need to write PS PB and PW commands!!!
+    for (int index = 0; index < tokens.data.size(); index++)//Need to write PS PB and PW commands!!!
     {
       int lineNumber = index + 1;
-      std::vector<String> tokenizedDataLine = dataTokens[index];
+      std::vector<String> tokenizedDataLine = tokens.data[index];
       String command = toUpper(tokenizedDataLine[0]);
       if (command == "PS")
       {
@@ -1450,19 +1364,25 @@ public:
     buffer.push_back(3);
     buffer.push_back(0);
     //push instructions to the buffer
-    for (int i = 0; i < codeTokens.size(); i++)
+    for (int i = 0; i < tokens.code.size(); i++)
     {
-      std::vector<String> line = codeTokens[i];
-      int lineNumber = i + 1;
-      Byte Ins = Opcode[line[0]];
-      buffer.push_back(Ins);
-      //Operands 
-      if (Opcode[line[0]] == Opcode["NAOEXISTECARAMBA"] && line[0] != "NOP")
+      std::vector<String> line = tokens.code[i];
+      const int lineNumber = i + 1;
+      const bool instructionExists = Opcode.count(line[0]) > 0 ? true : false;
+      Byte Ins;
+      if (instructionExists)
       {
+        Ins = Opcode.at(line[0]);
+      }
+      else
+      {
+        Ins = 0;
         String msg = "Unknown command \"" + line[0] + "\"";
         LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         continue;
       }
+      buffer.push_back(Ins);
+      //Operands 
       if (InsTypes[Ins] == P)
       {
         if (line.size() > 1)
@@ -1535,7 +1455,7 @@ public:
       else if (InsTypes[Ins] == IR)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
           buffer.push_back(RegMap[regString]);
         }
@@ -1556,7 +1476,7 @@ public:
       else if (InsTypes[Ins] == IL)
       {
         if (!checkWord(line[1], lineNumber, "Code")) compilationSucceeded = false;
-        if (toNumber(line[1]) < 1 || toNumber(line[1]) > codeTokens.size())
+        if (toNumber(line[1]) < 1 || toNumber(line[1]) > tokens.code.size())
         {
           LogCompilationError("Code", lineNumber, "Invalid line Number", compilationSucceeded);
           return;
@@ -1566,7 +1486,7 @@ public:
         Word address = 0;
         for (Byte index = 0; index < lineAddress - 1; index++)
         {
-          Instruction lineIns = Opcode[codeTokens[index][0]];
+          Instruction lineIns = Opcode.at(tokens.code[index][0]);
           address += (InstructionBytes[lineIns] + 1);
         }
         Byte upper = address >> 8;
@@ -1583,9 +1503,9 @@ public:
       else if (InsTypes[Ins] == IRR)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1593,9 +1513,9 @@ public:
           LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         }
         regString = line[2];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1616,9 +1536,9 @@ public:
       else if (InsTypes[Ins] == IRW)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1650,9 +1570,9 @@ public:
         buffer.push_back(upper);
         //check register
         String regString = line[2];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1673,9 +1593,9 @@ public:
       else if (InsTypes[Ins] == IRRR)
       {
         String regString = line[1];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1683,9 +1603,9 @@ public:
           LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         }
         regString = line[2];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1693,9 +1613,9 @@ public:
           LogCompilationError("Code", lineNumber, msg, compilationSucceeded);
         }
         regString = line[3];
-        if (RegMap[regString] != 0 || regString == "RA")
+        if (RegMap.count(regString) > 0)
         {
-          buffer.push_back(RegMap[regString]);
+          buffer.push_back(RegMap.at(regString));
         }
         else
         {
@@ -1728,14 +1648,14 @@ public:
     }
     if (!compilationSucceeded)
     {
-      std::cout << "Compilation Failed!" << std::endl;
+      std::cout << "Compilation Failed!" << '\n';
       halt = true;
     }
   }
 private:
   void LogCompilationError(const String& section, const int& lineNumber, const String& message, bool& success)
   {
-    std::cout << "[" << section << ":Line " << lineNumber << "] " << message << std::endl;
+    std::cout << "[" << section << ":Line " << lineNumber << "] " << message << '\n';
     success = false;
   }
   void Log(const String& message, const LogLevel& level)

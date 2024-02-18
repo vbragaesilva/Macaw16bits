@@ -8,7 +8,7 @@
 #include <vector>
 
 
-#define printd(x) std::cout << x << std::endl
+#define printd(x) std::cout << x << '\n'
 #define printsl(x) std::cout << x
 //#define is ==
 #endif 
@@ -136,7 +136,7 @@ static int toNumber(const String& s)
 			number = std::stoi(s.substr(2), nullptr, 2);
 		}
 		else{
-			std::cout << "Cannot convert \"" << s << "\" into a number!" << std::endl;
+			std::cout << "Cannot convert \"" << s << "\" into a number!" << '\n';
 			return 0;
 		}
 		return number;
@@ -148,7 +148,7 @@ static int toNumber(const String& s)
 			number = std::stoi(s.substr(2), nullptr, 16);
 		}
 		else{
-			std::cout << "Cannot convert \"" << s << "\" into a number!" << std::endl;
+			std::cout << "Cannot convert \"" << s << "\" into a number!" << '\n';
 			return 0;
 		}
 		return number;
@@ -160,7 +160,7 @@ static int toNumber(const String& s)
 			number = std::stoi(s, nullptr, 10);
 		}
 		else{
-			std::cout << "Cannot convert \"" << s << "\" into a number!" << std::endl;
+			std::cout << "Cannot convert \"" << s << "\" into a number!" << '\n';
 			return 0;
 		}
 		return number;
@@ -171,7 +171,7 @@ static bool checkByte(const String& s, const Word& lineNumber, const String& sec
 {
 	if (toNumber(s) > 255)
 	{
-		std::cout << "[" << section << ":Line " << lineNumber << "] Byte out of range!" << std::endl;
+		std::cout << "[" << section << ":Line " << lineNumber << "] Byte out of range!" << '\n';
 		return false;
 	}
 	return true;
@@ -180,7 +180,7 @@ static bool checkWord(const String& s, const Word& lineNumber, const String& sec
 {
 	if (toNumber(s) > 65535)
 	{
-		std::cout << "[" << section << ":Line " << lineNumber << "] Word out of range!" << std::endl;
+		std::cout << "[" << section << ":Line " << lineNumber << "] Word out of range!" << '\n';
 		return false;
 	}
 	return true;
@@ -211,7 +211,24 @@ static void usleep(__int64 usec)
 	CloseHandle(timer);
 }
 
+template <typename T> static void printVector(std::vector<T> vector, const String& label="")
+{
+	std::cout << label << ":[";
+	for (T el : vector)
+	{
+		std::cout << ' ' << el;
+	}
+	std::cout << "]" << '\n';
+}
 
+String removeWhiteSpacesFromStringStart(String string)
+{
+	while (string[0] == ' ' || string[0] == '	')
+	{
+		string = string.substr(1);
+	}
+	return string;
+}
 
 
 
